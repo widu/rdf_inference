@@ -17,33 +17,78 @@ class RdfInference
 		?r rdf:type ?A .
 		FILTER NOT EXISTS {?r rdf:type ?B}
 		}" 
-		@query_list[:subPropertyOf] = prefix + "CONSTRUCT {?x ?r ?y .}  
-		WHERE { ?x ?q ?y .
+		@query_list[:subPropertyOf] = prefix + "CONSTRUCT {?x ?r ?y .
+		[ rdf:subject ?x;
+		rdf:predicate ?r;
+		rdf:object ?y ] a wdc:DerivationRelationship .}  
+		WHERE { 
 		?q rdfs:subPropertyOf ?r .
+		?x ?q ?y .
+		
 		FILTER NOT EXISTS {?x ?r ?y }
 		}"
-		@query_list[:RDFS_Plus_TransitiveProperty] = prefix + "CONSTRUCT {?x ?p ?z .}  
-		WHERE { ?x ?p ?y .
-		?y ?p ?z .
+		@query_list[:RDFS_Plus_TransitiveProperty] = prefix + "CONSTRUCT {?x ?p ?z .
+		[ rdf:subject ?x;
+		rdf:predicate ?p;
+		rdf:object ?z ] a wdc:DerivationRelationship .}  
+		WHERE { 
 		?p rdf:type owl:TransitiveProperty .
+		?x ?p ?y .
+		?y ?p ?z .
+		
 		FILTER NOT EXISTS {?x ?p ?z }
 		}"
 
-		@query_list[:WIDU_shortCut] = prefix + "CONSTRUCT {?x ?p ?z .}  
+		@query_list[:WIDU_shortCut] = prefix + "CONSTRUCT {?x ?p ?z .
+		[ rdf:subject ?x;
+		rdf:predicate ?r;
+		rdf:object ?y ] a wdc:DerivationRelationship .}  
 		WHERE { 
-		?x ?p ?y .
-		?y ?p ?z .
 		?class1 wdc:shortCut ?class3.
 		?x a ?class1 .
 		?y a ?class2 .
 		?z a ?class3 .
+		?x ?p ?y .
+		?y ?p ?z .
 		
 		FILTER NOT EXISTS { ?x ?p ?z }
 		FILTER NOT EXISTS { ?y a ?class1 }
 		FILTER NOT EXISTS { ?y a ?class3 }
 		}"
 
-		@query_list[:RDFS_Plus_inverseOf9] = prefix + "CONSTRUCT {?y ?q ?x .}  
+		@query_list[:WIDU_isWeakerThan1] = prefix + "CONSTRUCT {?x ?p ?z .
+		[ rdf:subject ?x;
+		rdf:predicate ?p;
+		rdf:object ?z ] a wdc:DerivationRelationship .}  
+		WHERE { 
+		?p wdc:isWeakerThan ?p2 .
+		?x ?p ?y .
+		?y ?p2 ?z .
+		
+		FILTER NOT EXISTS { ?x ?p ?z }
+		
+		}"
+
+
+		@query_list[:WIDU_isWeakerThan2] = prefix + "CONSTRUCT {?x ?p2 ?z .
+		[ rdf:subject ?x;
+		rdf:predicate ?p2;
+		rdf:object ?z ] a wdc:DerivationRelationship .}  
+		WHERE { 
+		?p2 wdc:isWeakerThan ?p .	
+		?x ?p ?y .
+		?y ?p2 ?z .
+		
+		FILTER NOT EXISTS { ?x ?p2 ?z }
+		
+		}"
+
+
+
+		@query_list[:RDFS_Plus_inverseOf9] = prefix + "CONSTRUCT {?y ?q ?x .
+		[ rdf:subject ?x;
+		rdf:predicate ?r;
+		rdf:object ?y ] a wdc:DerivationRelationship .}  
 		WHERE { 
 		?p owl:inverseOf ?q .
 		?x ?p ?y .
